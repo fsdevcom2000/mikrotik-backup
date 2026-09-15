@@ -1,3 +1,5 @@
+[Русский](README.ru.md)
+
 # MikroTik Backup Manager
 
 Windows command-line utility for automated MikroTik RouterOS backups.
