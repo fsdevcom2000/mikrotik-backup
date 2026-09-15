@@ -285,6 +285,59 @@ backup_api_server
 
 ---
 
+## Генератор конфигурации
+
+Для использования с большим количеством роутеров в репозитории есть
+`scripts/MikroTikBackupConfigGenerator.ps1`.
+
+Генератор читает имена и адреса роутеров из простого текстового файла и
+заменяет только секцию `routers:` в существующем `config.yaml`. Остальные
+настройки конфигурации сохраняются.
+
+Формат входного файла:
+
+```text
+# name;address
+router-001;192.168.1.1
+router-002;192.168.1.2
+router-003;router-003.example.local
+```
+
+Проверить входной файл без создания конфигурации:
+
+```
+.\scripts\MikroTikBackupConfigGenerator.ps1 `
+    -InputFile .\routers.txt `
+    -ValidateOnly
+```
+
+Создать конфигурацию:
+
+```
+.\scripts\MikroTikBackupConfigGenerator.ps1 `
+    -InputFile .\routers.txt `
+    -OutputFile .\config.generated.yaml
+```
+
+После генерации конфигурацию можно проверить встроенным валидатором:
+
+```
+.\MikroTikBackup.Cli.exe config validate
+```
+
+Настройки роутеров по умолчанию:
+
+Параметр	Значение
+Протокол	api-ssl
+API порт	8729
+SFTP порт	22
+Credential	backup
+
+Эти значения можно изменить параметрами генератора.
+
+---
+
+
 ## Тестирование
 
 Тесты покрывают основной backup workflow, storage, конфигурационные сервисы, retry-логику, обработку статусов и Telegram уведомления.

@@ -260,6 +260,59 @@ The certificate names `backup_api_ca` and `backup_api_server` are examples and c
 
 ---
 
+## Config generator
+
+For installations with many routers, the repository includes
+`scripts/MikroTikBackupConfigGenerator.ps1`.
+
+The generator reads router names and addresses from a simple text file and
+updates only the `routers:` section of an existing `config.yaml`. Other
+configuration settings are preserved.
+
+Input format:
+
+```text
+# name;address
+router-001;192.168.1.1
+router-002;192.168.1.2
+router-003;router-003.example.local
+```
+
+Validate the input without creating a configuration:
+
+```
+.\scripts\MikroTikBackupConfigGenerator.ps1 `
+    -InputFile .\routers.txt `
+    -ValidateOnly
+```
+
+Generate a configuration:
+
+```
+.\scripts\MikroTikBackupConfigGenerator.ps1 `
+    -InputFile .\routers.txt `
+    -OutputFile .\config.generated.yaml
+```
+
+The generated configuration can be checked with the built-in validator:
+
+```
+.\MikroTikBackup.Cli.exe config validate
+```
+
+Default router settings:
+
+Setting	Default
+Protocol	api-ssl
+API port	8729
+SFTP port	22
+Credential	backup
+
+These values can be changed using the generator parameters.
+
+
+---
+
 ## Testing
 
 The test suite covers the core backup workflow, storage, configuration-related services, retry handling, status processing and Telegram notifications.
