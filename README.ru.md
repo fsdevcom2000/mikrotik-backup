@@ -52,18 +52,18 @@ MikroTik Backup Manager подключается к настроенным Mikro
 ## Команды
 
 ```text
-MikroTikBackup.exe backup
-MikroTikBackup.exe backup --router office-01
+MikroTikBackup.Cli.exe backup
+MikroTikBackup.Cli.exe backup --router office-01
 
-MikroTikBackup.exe config validate
+MikroTikBackup.Cli.exe config validate
 
-MikroTikBackup.exe credentials add
+MikroTikBackup.Cli.exe credentials add
 
-MikroTikBackup.exe test
-MikroTikBackup.exe test --router office-01
+MikroTikBackup.Cli.exe test
+MikroTikBackup.Cli.exe test --router office-01
 
-MikroTikBackup.exe status
-MikroTikBackup.exe status --router office-01
+MikroTikBackup.Cli.exe status
+MikroTikBackup.Cli.exe status --router office-01
 ```
 
 `backup` выполняет обычный сценарий резервного копирования.
