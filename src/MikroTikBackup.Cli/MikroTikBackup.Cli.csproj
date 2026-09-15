@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MikroTikBackup.Core\MikroTikBackup.Core.csproj" />
+    <ProjectReference Include="..\MikroTikBackup.RouterOS\MikroTikBackup.RouterOS.csproj" />
+    <ProjectReference Include="..\MikroTikBackup.Storage\MikroTikBackup.Storage.csproj" />
+    <ProjectReference Include="..\MikroTikBackup.Notifications\MikroTikBackup.Notifications.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

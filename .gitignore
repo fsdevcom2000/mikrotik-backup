@@ -1,0 +1,46 @@
+﻿# Build output
+**/bin/
+**/obj/
+
+# IDE
+.vs/
+.idea/
+.vscode/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local configuration and secrets
+config.yaml
+credentials.dat
+
+# Logs
+*.log
+logs/
+Logs/
+
+# Local backup data
+Backups/
+backups/
+
+# Test results
+TestResults/
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Publish output
+publish/
+artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Internal project specification
+SPECIFICATION.md
