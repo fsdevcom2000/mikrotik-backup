@@ -147,6 +147,119 @@ SFTP is used for file transfer.
 
 The project has been tested with RouterOS 6.x and 7.x.
 
+---
+
+## RouterOS API-SSL setup
+
+If `api-ssl` is configured with `certificate=none`, RouterOS may reject the TLS handshake. Create a dedicated CA and server certificate for the RouterOS API-SSL service.
+
+### 1. Create a dedicated CA certificate
+
+```routeros
+/certificate
+add name=backup_api_ca common-name=backup_api_ca key-usage=key-cert-sign,crl-sign
+```
+
+Sign the CA:
+
+```routeros
+/certificate
+sign backup_api_ca
+```
+
+### 2. Create a server certificate
+
+```routeros
+/certificate
+add name=backup_api_server common-name=backup-api-server
+```
+
+Sign it with the new CA:
+
+```routeros
+/certificate
+sign backup_api_server ca=backup_api_ca
+```
+
+### 3. Verify the certificates
+
+```routeros
+/certificate print
+```
+
+You should see entries similar to:
+
+```text
+backup_api_ca
+backup_api_server
+```
+
+The server certificate should have a private key (`K` flag).
+
+### 4. Assign the server certificate to API-SSL
+
+```routeros
+/ip service set api-ssl certificate=backup_api_server
+```
+
+Verify the configuration:
+
+```routeros
+/ip service print where name="api-ssl"
+```
+
+Expected result:
+
+```text
+api-ssl    8729    certificate=backup_api_server
+```
+
+### 5. Verify TLS from a Windows machine
+
+OpenSSL can be used to verify that RouterOS accepts the TLS connection:
+
+```powershell
+openssl s_client -connect ROUTER_IP:8729 -tls1_2
+```
+
+A successful connection should show something similar to:
+
+```text
+Protocol: TLSv1.2
+Cipher: ECDHE-RSA-AES256-GCM-SHA384
+```
+
+A self-signed certificate warning is expected when using a locally created CA.
+
+### 6. Configure MikroTik Backup Manager
+
+Use `api-ssl` and port `8729` in `config.yaml`:
+
+```yaml
+protocol: api-ssl
+port: 8729
+```
+
+Then test the connection:
+
+```powershell
+MikroTikBackup.Cli.exe test --router ROUTER_NAME
+```
+
+If the test succeeds, run a real backup:
+
+```powershell
+MikroTikBackup.Cli.exe backup --router ROUTER_NAME
+```
+
+### Important
+
+Use a dedicated certificate for API-SSL. Do not replace or modify certificates already used by VPN, HTTPS or other RouterOS services unless you know exactly what they are used for.
+
+The certificate names `backup_api_ca` and `backup_api_server` are examples and can be changed if necessary.
+
+---
+
 ## Testing
 
 The test suite covers the core backup workflow, storage, configuration-related services, retry handling, status processing and Telegram notifications.

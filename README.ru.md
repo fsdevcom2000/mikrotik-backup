@@ -147,6 +147,144 @@ RouterOS client поддерживает RouterOS API и API-SSL transports.
 
 Проект протестирован с RouterOS 6.x и 7.x.
 
+---
+
+## Настройка API-SSL на RouterOS
+
+Если у RouterOS сервис `api-ssl` настроен с `certificate=none`, TLS-соединение может завершаться ошибкой `HandshakeFailure`.
+
+Для API-SSL можно создать отдельный CA и отдельный серверный сертификат.
+
+### 1. Создание отдельного CA
+
+Создаём собственный CA для API-SSL:
+
+```routeros
+/certificate
+add name=backup_api_ca common-name=backup_api_ca key-usage=key-cert-sign,crl-sign
+```
+
+Подписываем CA:
+
+```routeros
+/certificate
+sign backup_api_ca
+```
+
+### 2. Создание серверного сертификата
+
+Создаём сертификат для API-SSL:
+
+```routeros
+/certificate
+add name=backup_api_server common-name=backup-api-server
+```
+
+Подписываем его созданным CA:
+
+```routeros
+/certificate
+sign backup_api_server ca=backup_api_ca
+```
+
+### 3. Проверка сертификатов
+
+Проверяем созданные сертификаты:
+
+```routeros
+/certificate print
+```
+
+В списке должны появиться:
+
+```text
+backup_api_ca
+backup_api_server
+```
+
+У `backup_api_server` должен присутствовать флаг `K` - это означает, что у сертификата есть приватный ключ.
+
+### 4. Назначение сертификата для API-SSL
+
+Назначаем серверный сертификат сервису `api-ssl`:
+
+```routeros
+/ip service set api-ssl certificate=backup_api_server
+```
+
+Проверяем:
+
+```routeros
+/ip service print where name="api-ssl"
+```
+
+Должно быть примерно:
+
+```text
+api-ssl    8729    certificate=backup_api_server
+```
+
+### 5. Проверка TLS
+
+С Windows-компьютера можно проверить TLS напрямую через OpenSSL:
+
+```powershell
+openssl s_client -connect ROUTER_IP:8729 -tls1_2
+```
+
+При успешном подключении в выводе должны присутствовать, например:
+
+```text
+Protocol: TLSv1.2
+Cipher: ECDHE-RSA-AES256-GCM-SHA384
+```
+
+Сообщение:
+
+```text
+self-signed certificate in certificate chain
+```
+
+для созданного нами собственного CA является нормальным. Оно означает, что OpenSSL не доверяет этому CA как системному центру сертификации, но сам TLS handshake при этом может быть успешно установлен.
+
+### 6. Настройка MikroTik Backup Manager
+
+В `config.yaml` для соответствующего роутера указываем:
+
+```yaml
+protocol: api-ssl
+port: 8729
+```
+
+После этого проверяем подключение:
+
+```powershell
+MikroTikBackup.Cli.exe test --router ROUTER_NAME
+```
+
+Если тест завершился успешно, можно выполнить резервное копирование:
+
+```powershell
+MikroTikBackup.Cli.exe backup --router ROUTER_NAME
+```
+
+### Важно
+
+Для API-SSL рекомендуется использовать отдельный сертификат.
+
+Не изменяйте и не заменяйте сертификаты, которые уже используются для VPN, HTTPS или других сервисов RouterOS, если вы не уверены в их назначении.
+
+В примере используются имена:
+
+```text
+backup_api_ca
+backup_api_server
+```
+
+Их можно изменить при необходимости.
+
+---
+
 ## Тестирование
 
 Тесты покрывают основной backup workflow, storage, конфигурационные сервисы, retry-логику, обработку статусов и Telegram уведомления.
