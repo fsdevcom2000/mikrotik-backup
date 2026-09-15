@@ -339,6 +339,15 @@ The backup workflow has also been verified against a real MikroTik RouterOS devi
 * status reporting
 * Telegram notification delivery
 
+---
+
+## ⚠️ Scope & Limitations
+
+This project is intentionally backup-only. Restore operations are strictly outside the scope of this utility, are not supported, and will never be added (WONTFIX). All restore procedures must be performed manually by the administrator using standard RouterOS tools such as WinBox, SSH, or the Netinstall recovery procedure.
+Automatic restore is inherently risky and can easily lead to severe network downtime or complete lockout.
+
+---
+
 ## License
 
 MIT License.
