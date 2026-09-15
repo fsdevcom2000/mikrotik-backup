@@ -1,0 +1,36 @@
+storage:
+  path: "D:\\MikroTik\\Backups"
+
+backup:
+  binary: true
+  export: true
+  parallel: 5
+
+timeouts:
+  connectionSeconds: 10
+  operationSeconds: 60
+  transferSeconds: 300
+
+retry:
+  attempts: 3
+  delaySeconds: 5
+
+retention:
+  days: 30
+
+notifications:
+  telegram:
+    enabled: false
+    token: ""
+    chatId: ""
+
+logging:
+  path: "D:\\MikroTik\\Logs"
+
+routers:
+  - name: "office-01"
+    address: "192.168.88.1"
+    protocol: "api-ssl"
+    port: 8729
+    transferPort: 22
+    credential: "office-01"
